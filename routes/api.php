@@ -21,6 +21,21 @@ Route::get('produk', [ProdukController::class, 'index']);
 Route::get('produk/{produk}', [ProdukController::class, 'show']);
 Route::get('produk/barcode/{code}', [ProdukController::class, 'byBarcode']);
 
+// Transaksi - PUBLIC (tanpa auth)
+Route::get('transaksi', [TransaksiController::class, 'index']);
+Route::get('transaksi/{id}', [TransaksiController::class, 'show']);
+Route::post('transaksi', [TransaksiController::class, 'store']);
+Route::put('transaksi/{id}', [TransaksiController::class, 'update']);
+Route::delete('transaksi/{id}', [TransaksiController::class, 'destroy']);
+Route::patch('transaksi/{id}/status', [TransaksiController::class, 'updateStatus']);
+
+// Transaksi Detail - PUBLIC
+Route::get('transaksi_detail', [TransaksiDetailController::class, 'index']);
+Route::get('transaksi_detail/{id}', [TransaksiDetailController::class, 'show']);
+Route::post('transaksi_detail', [TransaksiDetailController::class, 'store']);
+Route::put('transaksi_detail/{id}', [TransaksiDetailController::class, 'update']);
+Route::delete('transaksi_detail/{id}', [TransaksiDetailController::class, 'destroy']);
+
 // Hardware webhook (public)
 Route::post('hardware/webhook', [HardwareController::class, 'receive']);
 Route::get('hardware/webhook', function(){ return response('OK - use POST for webhook', 200); });
@@ -62,21 +77,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     // Logout
     Route::post('/logout', [LoginController::class, 'logout']);
-    
-    // Transaksi - all authenticated users (admin + kasir)
-    Route::get('transaksi', [TransaksiController::class, 'index']);
-    Route::post('transaksi', [TransaksiController::class, 'store']);
-    Route::get('transaksi/{id}', [TransaksiController::class, 'show']);
-    Route::put('transaksi/{id}', [TransaksiController::class, 'update']);
-    Route::delete('transaksi/{id}', [TransaksiController::class, 'destroy']);
-    Route::patch('transaksi/{id}/status', [TransaksiController::class, 'updateStatus']);
-    
-    // Transaksi Detail
-    Route::get('transaksi_detail', [TransaksiDetailController::class, 'index']);
-    Route::post('transaksi_detail', [TransaksiDetailController::class, 'store']);
-    Route::get('transaksi_detail/{id}', [TransaksiDetailController::class, 'show']);
-    Route::put('transaksi_detail/{id}', [TransaksiDetailController::class, 'update']);
-    Route::delete('transaksi_detail/{id}', [TransaksiDetailController::class, 'destroy']);
     
     // Hardware command - all authenticated users
     Route::post('hardware/command', [HardwareController::class, 'command']);

@@ -36,6 +36,20 @@ Route::post('transaksi_detail', [TransaksiDetailController::class, 'store']);
 Route::put('transaksi_detail/{id}', [TransaksiDetailController::class, 'update']);
 Route::delete('transaksi_detail/{id}', [TransaksiDetailController::class, 'destroy']);
 
+// Spending Report - PUBLIC
+Route::get('spending-report', [SpendingReportController::class, 'index']);
+Route::get('spending-report/{id}', [SpendingReportController::class, 'show']);
+Route::post('spending-report', [SpendingReportController::class, 'store']);
+Route::put('spending-report/{id}', [SpendingReportController::class, 'update']);
+Route::delete('spending-report/{id}', [SpendingReportController::class, 'destroy']);
+
+// Detail Spending - PUBLIC
+Route::get('detail-spending', [DetailSpendingController::class, 'index']);
+Route::get('detail-spending/{id}', [DetailSpendingController::class, 'show']);
+Route::post('detail-spending', [DetailSpendingController::class, 'store']);
+Route::put('detail-spending/{id}', [DetailSpendingController::class, 'update']);
+Route::delete('detail-spending/{id}', [DetailSpendingController::class, 'destroy']);
+
 // Hardware webhook (public)
 Route::post('hardware/webhook', [HardwareController::class, 'receive']);
 Route::get('hardware/webhook', function(){ return response('OK - use POST for webhook', 200); });
@@ -58,19 +72,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('produk', [ProdukController::class, 'store']);
     Route::put('produk/{id}', [ProdukController::class, 'update']);
     Route::delete('produk/{id}', [ProdukController::class, 'destroy']);
-    
-    // Spending report - admin only
-    Route::get('spending-report', [SpendingReportController::class, 'index']);
-    Route::post('spending-report', [SpendingReportController::class, 'store']);
-    Route::get('spending-report/{id}', [SpendingReportController::class, 'show']);
-    Route::put('spending-report/{id}', [SpendingReportController::class, 'update']);
-    Route::delete('spending-report/{id}', [SpendingReportController::class, 'destroy']);
-    
-    Route::get('detail-spending', [DetailSpendingController::class, 'index']);
-    Route::post('detail-spending', [DetailSpendingController::class, 'store']);
-    Route::get('detail-spending/{id}', [DetailSpendingController::class, 'show']);
-    Route::put('detail-spending/{id}', [DetailSpendingController::class, 'update']);
-    Route::delete('detail-spending/{id}', [DetailSpendingController::class, 'destroy']);
 });
 
 // ============ AUTHENTICATED ROUTES (auth:sanctum) ============

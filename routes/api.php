@@ -11,6 +11,9 @@ use App\Http\Controllers\Api\DetailSpendingController;
 use App\Http\Controllers\Api\HardwareController;
 
 // ============ PUBLIC ROUTES (tanpa auth) ============
+// CORS preflight
+Route::options('/login', function() { return response()->noContent(); });
+
 Route::post('/login', [LoginController::class, 'login']);
 
 // GET produk (public - semua bisa baca)

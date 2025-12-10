@@ -47,8 +47,11 @@ class LoginController extends Controller
             ], 401);
         }
 
-        // Login pakai session (stateful)
-        Auth::login($user);
+        // Login pakai session (stateful) dengan remember
+        Auth::login($user, true);
+
+        // Regenerate session untuk keamanan
+        $request->session()->regenerate();
 
         // Generate token untuk frontend (optional, bisa tetap pakai atau tidak)
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -62,7 +65,17 @@ class LoginController extends Controller
                 'role' => $user->role,
                 'token' => $token
             ]
-        ]);
+        ])->cookie(
+            'laravel_session',
+            $request->session()->getId(),
+            config('session.lifetime'),
+            '/',
+            config('session.domain'),
+            config('session.secure'),
+            config('session.http_only'),
+            false,
+            config('session.same_site')
+        );
     }
 
     public function logout(Request $request)
@@ -70,12 +83,28 @@ class LoginController extends Controller
         // Logout session
         Auth::logout();
         
-        // Hapus token juga
-        $request->user()->currentAccessToken()->delete();
+        // Invalidate session
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        
+        // Hapus token juga (jika ada)
+        if ($request->user()) {
+            $request->user()->currentAccessToken()->delete();
+        }
         
         return response()->json([
             'success' => true,
             'message' => 'Logout berhasil'
-        ]);
+        ])->cookie(
+            'laravel_session',
+            '',
+            -1,
+            '/',
+            config('session.domain'),
+            config('session.secure'),
+            config('session.http_only'),
+            false,
+            config('session.same_site')
+        );
     }
 }

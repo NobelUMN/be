@@ -19,19 +19,6 @@ class LoginController extends Controller
             'password' => 'required'
         ]);
 
-        // Cek apakah sudah ada session login
-        if (Auth::check()) {
-            $currentUser = Auth::user();
-            return response()->json([
-                'success' => false,
-                'message' => 'Sudah ada user yang login: ' . $currentUser->username,
-                'current_user' => [
-                    'username' => $currentUser->username,
-                    'role' => $currentUser->role
-                ]
-            ], 403);
-        }
-
         $user = User::where('username', $request->username)->first();
         if (!$user) {
             return response()->json([
@@ -47,13 +34,7 @@ class LoginController extends Controller
             ], 401);
         }
 
-        // Login pakai session (stateful) dengan remember
-        Auth::login($user, true);
-
-        // Regenerate session untuk keamanan
-        $request->session()->regenerate();
-
-        // Generate token untuk frontend (optional, bisa tetap pakai atau tidak)
+        // Generate token untuk frontend
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -65,46 +46,16 @@ class LoginController extends Controller
                 'role' => $user->role,
                 'token' => $token
             ]
-        ])->cookie(
-            'laravel_session',
-            $request->session()->getId(),
-            config('session.lifetime'),
-            '/',
-            config('session.domain'),
-            config('session.secure'),
-            config('session.http_only'),
-            false,
-            config('session.same_site')
-        );
+        ]);
     }
 
     public function logout(Request $request)
     {
-        // Logout session
-        Auth::logout();
-        
-        // Invalidate session
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        
-        // Hapus token juga (jika ada)
-        if ($request->user()) {
-            $request->user()->currentAccessToken()->delete();
-        }
+        $request->user()->currentAccessToken()->delete();
         
         return response()->json([
             'success' => true,
             'message' => 'Logout berhasil'
-        ])->cookie(
-            'laravel_session',
-            '',
-            -1,
-            '/',
-            config('session.domain'),
-            config('session.secure'),
-            config('session.http_only'),
-            false,
-            config('session.same_site')
-        );
+        ]);
     }
 }

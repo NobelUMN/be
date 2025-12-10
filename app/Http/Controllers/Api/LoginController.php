@@ -65,7 +65,17 @@ class LoginController extends Controller
                 'role' => $user->role,
                 'token' => $token
             ]
-        ]);
+        ])->cookie(
+            'laravel_session',
+            $request->session()->getId(),
+            config('session.lifetime'),
+            '/',
+            config('session.domain'),
+            config('session.secure'),
+            config('session.http_only'),
+            false,
+            config('session.same_site')
+        );
     }
 
     public function logout(Request $request)
@@ -85,6 +95,16 @@ class LoginController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Logout berhasil'
-        ]);
+        ])->cookie(
+            'laravel_session',
+            '',
+            -1,
+            '/',
+            config('session.domain'),
+            config('session.secure'),
+            config('session.http_only'),
+            false,
+            config('session.same_site')
+        );
     }
 }

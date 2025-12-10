@@ -19,6 +19,19 @@ class LoginController extends Controller
             'password' => 'required'
         ]);
 
+        // Cek apakah sudah ada session login
+        if (Auth::check()) {
+            $currentUser = Auth::user();
+            return response()->json([
+                'success' => false,
+                'message' => 'Sudah ada user yang login: ' . $currentUser->username,
+                'current_user' => [
+                    'username' => $currentUser->username,
+                    'role' => $currentUser->role
+                ]
+            ], 403);
+        }
+
         $user = User::where('username', $request->username)->first();
         if (!$user) {
             return response()->json([
@@ -34,7 +47,10 @@ class LoginController extends Controller
             ], 401);
         }
 
-        // Generate token
+        // Login pakai session (stateful)
+        Auth::login($user);
+
+        // Generate token untuk frontend (optional, bisa tetap pakai atau tidak)
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -51,7 +67,12 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        // Logout session
+        Auth::logout();
+        
+        // Hapus token juga
         $request->user()->currentAccessToken()->delete();
+        
         return response()->json([
             'success' => true,
             'message' => 'Logout berhasil'

@@ -76,6 +76,14 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
 // ============ AUTHENTICATED ROUTES (auth:sanctum) ============
 Route::middleware('auth:sanctum')->group(function () {
+    // Cek user yang sedang login
+    Route::get('/me', function () {
+        return response()->json([
+            'authenticated' => true,
+            'user' => auth()->user()
+        ]);
+    });
+
     // Logout
     Route::post('/logout', [LoginController::class, 'logout']);
     
